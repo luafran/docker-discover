@@ -40,20 +40,27 @@ def get_services():
 
     for i in backends.children:
 
-        print('Children: {i}'.format(i=i))
+        print('children: {i}'.format(i=i))
 
         if i.key[1:].count("/") != 2:
-            print('Skipping: {i}'.format(i=i))
+            print('skipping: {i}'.format(i=i))
             continue
 
         ignore, service, container = i.key[1:].split("/")
+
+        print('ignore: {ign}'.format(ign=ignore))
+        print('service: {srv}'.format(srv=service))
+        print('container: {cont}'.format(cont=container))
+
         endpoints = services.setdefault(service, dict(port="", backends=[]))
+
         if container == "port":
             endpoints["port"] = i.value
             continue
         endpoints["backends"].append(dict(name=container, addr=i.value))
+        print('endpoints: {ep}'.format(ep=endpoints))
 
-    print("Obtained services: {srv}".format(srv=services))
+    print("services: {srv}".format(srv=services))
 
     return services
 
