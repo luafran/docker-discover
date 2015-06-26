@@ -42,8 +42,9 @@ def get_services():
 
         print('children: {i}'.format(i=i))
 
-        if i.key[1:].count("/") != 2:
+        if i.key[1:].count("/") != 3:
             print('skipping: {i}'.format(i=i))
+            print('/ = {count}'.format(count=i.key[1:].count("/")))
             continue
 
         ignore, service, container = i.key[1:].split("/")
