@@ -40,7 +40,10 @@ def get_services():
 
     for i in backends.children:
 
+        print('Children: {i}'.format(i=i))
+
         if i.key[1:].count("/") != 2:
+            print('Skipping: {i}'.format(i=i))
             continue
 
         ignore, service, container = i.key[1:].split("/")
