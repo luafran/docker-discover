@@ -47,9 +47,8 @@ def get_services():
             print('/ = {count}'.format(count=i.key[1:].count("/")))
             continue
 
-        ignore, service, container = i.key[1:].split("/")
+        _, _, service, container = i.key[1:].split("/")
 
-        print('ignore: {ign}'.format(ign=ignore))
         print('service: {srv}'.format(srv=service))
         print('container: {cont}'.format(cont=container))
 
