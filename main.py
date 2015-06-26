@@ -35,7 +35,7 @@ def get_services():
 
     host, port = get_etcd_addr()
     client = etcd.Client(host=host, port=int(port))
-    backends = client.read('/backends', recursive = True)
+    backends = client.read('/backends', recursive=True)
     services = {}
 
     for i in backends.children:
@@ -49,6 +49,9 @@ def get_services():
             endpoints["port"] = i.value
             continue
         endpoints["backends"].append(dict(name=container, addr=i.value))
+
+    print("Obtained services: {srv}".format(srv=services))
+
     return services
 
 def generate_config(services):
