@@ -42,12 +42,15 @@ def get_services():
 
         print('children: {i}'.format(i=i))
 
-        if i.key[1:].count("/") != 3:
+        if i.key[1:].count("/") == 2:
+            _, service, container = i.key[1:].split("/")
+        elif i.key[1:].count("/") == 3:
+            _, _, service, container = i.key[1:].split("/")
+        else:
             print('skipping: {i}'.format(i=i))
             print('/ = {count}'.format(count=i.key[1:].count("/")))
             continue
 
-        _, _, service, container = i.key[1:].split("/")
 
         print('service: {srv}'.format(srv=service))
         print('container: {cont}'.format(cont=container))
