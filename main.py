@@ -13,6 +13,7 @@ POLL_TIMEOUT=5
 
 signal.signal(signal.SIGCHLD, signal.SIG_IGN)
 
+
 def get_etcd_addr():
     if "ETCD_HOST" not in os.environ:
         print "ETCD_HOST not set"
@@ -31,6 +32,7 @@ def get_etcd_addr():
 
     return host, port
 
+
 def get_services():
 
     host, port = get_etcd_addr()
@@ -42,30 +44,34 @@ def get_services():
 
         print('children: {i}'.format(i=i))
 
-        if i.key[1:].count("/") == 2:
-            _, service, container = i.key[1:].split("/")
-        elif i.key[1:].count("/") == 3:
-            _, _, service, container = i.key[1:].split("/")
+        if i.key[1:].count("/") == 3:
+            _, service, version, container = i.key[1:].split("/")
         else:
             print('skipping: {i}'.format(i=i))
             print('/ = {count}'.format(count=i.key[1:].count("/")))
             continue
 
+        service_name = service + '_' + version
+        path = '/' + service + '/' + version
 
-        print('service: {srv}'.format(srv=service))
+        print('service_name: {srv}'.format(srv=service_name))
+        print('version: {vers}'.format(vers=version))
+        print('path: {path}'.format(path=path))
         print('container: {cont}'.format(cont=container))
 
-        endpoints = services.setdefault(service, dict(port="", backends=[]))
+        endpoints = services.setdefault(service_name, dict(path=path, weight=100, backends=[]))
 
-        if container == "port":
-            endpoints["port"] = i.value
+        if container == "weight":
+            endpoints["weight"] = i.value
             continue
+
         endpoints["backends"].append(dict(name=container, addr=i.value))
         print('endpoints: {ep}'.format(ep=endpoints))
 
     print("services: {srv}".format(srv=services))
 
     return services
+
 
 def generate_config(services):
     template = env.get_template('haproxy.cfg.tmpl')

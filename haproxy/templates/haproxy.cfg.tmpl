@@ -1,4 +1,4 @@
-global
+    global
     daemon
     maxconn 4096
     pidfile /var/run/haproxy.pid
@@ -19,9 +19,17 @@ listen stats :1936
     stats uri /
     #stats auth Username:Password
 
+frontend http-in
+    bind *:80
+    reqadd X-Forwarded-Proto:\ http
+    {% for service in services %}
+    acl service_{{ service }} path_beg {{ services[service].path }}
+    use_backend bk_{{ service }} if service_{{ service }}
+    {% endfor %}
+
 {% for service in services %}
-listen {{ service }}
-    bind *:{{services[service].port}}
+backend bk_{{ service }}
+    balance roundrobin
     {% for backend in services[service].backends %}
     server {{ backend.name }} {{ backend.addr }} check inter 2s rise 3 fall 2{% endfor %}
 {% endfor %}
